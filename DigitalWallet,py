@@ -1,0 +1,297 @@
+from abc import ABC, abstractmethod
+from datetime import datetime
+from enum import Enum
+from typing import List, Dict, Optional
+import uuid
+
+class TransactionType(Enum):
+    DEPOSIT = "DEPOSIT"
+    WITHDRAWAL = "WITHDRAWAL"
+    TRANSFER = "TRANSFER"
+    PAYMENT = "PAYMENT"
+
+class TransactionStatus(Enum):
+    PENDING = "PENDING"
+    COMPLETED = "COMPLETED"
+    FAILED = "FAILED"
+    CANCELLED = "CANCELLED"
+
+class User:
+    
+    def __init__(self, user_id: str, name: str, email: str, phone: str):
+        self.user_id = user_id
+        self.name = name
+        self.email = email
+        self.phone = phone
+        self.wallets: List[Wallet] = []
+    
+    def create_wallet(self, currency: str) -> "Wallet":
+        wallet = Wallet(str(uuid.uuid4()), self.user_id, currency)
+        self.wallets.append(wallet)
+        return wallet
+    
+    def get_wallet_by_currency(self, currency: str) -> Optional["Wallet"]:
+        for wallet in self.wallets:
+            if wallet.currency == currency:
+                return wallet
+        return None
+
+class Wallet:
+    """Class representing a wallet in the system"""
+    
+    def __init__(self, wallet_id: str, user_id: str, currency: str):
+        self.wallet_id = wallet_id
+        self.user_id = user_id
+        self.currency = currency
+        self.balance = 0.0
+        self.transaction_history: List[Transaction] = []
+    
+    def deposit(self, amount: float) -> "Transaction":
+        """Add funds to the wallet"""
+        if amount <= 0:
+            raise ValueError("Deposit amount must be positive")
+        
+        transaction = Transaction(
+            str(uuid.uuid4()),
+            self.wallet_id,
+            None,
+            amount,
+            TransactionType.DEPOSIT,
+            f"Deposit to wallet {self.wallet_id}"
+        )
+        
+        transaction_processor = TransactionProcessor()
+        result = transaction_processor.process(transaction)
+        
+        if result.status == TransactionStatus.COMPLETED:
+            self.balance += amount
+            self.transaction_history.append(result)
+        
+        return result
+    
+    def withdraw(self, amount: float) -> "Transaction":
+        if amount <= 0:
+            raise ValueError("Withdrawal amount must be positive")
+        
+        if amount > self.balance:
+            raise InsufficientFundsError(f"Insufficient funds. Available: {self.balance}, Requested: {amount}")
+        
+        transaction = Transaction(
+            str(uuid.uuid4()),
+            None,
+            self.wallet_id,
+            amount,
+            TransactionType.WITHDRAWAL,
+            f"Withdrawal from wallet {self.wallet_id}"
+        )
+        
+        transaction_processor = TransactionProcessor()
+        result = transaction_processor.process(transaction)
+        
+        if result.status == TransactionStatus.COMPLETED:
+            self.balance -= amount
+            self.transaction_history.append(result)
+        
+        return result
+    
+    def transfer(self, recipient_wallet: "Wallet", amount: float) -> "Transaction":
+        if amount <= 0:
+            raise ValueError("Transfer amount must be positive")
+        
+        if amount > self.balance:
+            raise InsufficientFundsError(f"Insufficient funds. Available: {self.balance}, Requested: {amount}")
+        
+        if self.currency != recipient_wallet.currency:
+            raise CurrencyMismatchError(f"Currency mismatch: {self.currency} vs {recipient_wallet.currency}")
+        
+        transaction = Transaction(
+            str(uuid.uuid4()),
+            self.wallet_id,
+            recipient_wallet.wallet_id,
+            amount,
+            TransactionType.TRANSFER,
+            f"Transfer from wallet {self.wallet_id} to wallet {recipient_wallet.wallet_id}"
+        )
+        
+        transaction_processor = TransactionProcessor()
+        result = transaction_processor.process(transaction)
+        
+        if result.status == TransactionStatus.COMPLETED:
+            self.balance -= amount
+            recipient_wallet.balance += amount
+            self.transaction_history.append(result)
+            recipient_wallet.transaction_history.append(result)
+        
+        return result
+    
+    def get_transaction_history(self, start_date: datetime = None, end_date: datetime = None) -> List["Transaction"]:
+        if not start_date and not end_date:
+            return self.transaction_history
+        
+        filtered_transactions = []
+        for transaction in self.transaction_history:
+            if (not start_date or transaction.timestamp >= start_date) and \
+               (not end_date or transaction.timestamp <= end_date):
+                filtered_transactions.append(transaction)
+        
+        return filtered_transactions
+    
+class Transaction:
+    
+    def __init__(self, transaction_id: str, source_wallet_id: Optional[str], 
+                 destination_wallet_id: Optional[str], amount: float, 
+                 transaction_type: TransactionType, description: str):
+        self.transaction_id = transaction_id
+        self.source_wallet_id = source_wallet_id
+        self.destination_wallet_id = destination_wallet_id
+        self.amount = amount
+        self.transaction_type = transaction_type
+        self.description = description
+        self.timestamp = datetime.now()
+        self.status = TransactionStatus.PENDING
+
+class TransactionProcessor:
+    
+    def process(self, transaction: Transaction) -> Transaction:
+        # In a real implementation, this would include:
+        # - Validation logic
+        # - Integration with payment gateways
+        # - Database operations
+        # - Error handling
+        
+        try:
+            # Simulate transaction processing
+            # In a real system, this would involve more complex logic
+            transaction.status = TransactionStatus.COMPLETED
+        except Exception as e:
+            transaction.status = TransactionStatus.FAILED
+            # Log the error
+        
+        return transaction
+
+class PaymentGateway(ABC):
+    
+    @abstractmethod
+    def process_payment(self, amount: float, source: str, destination: str) -> bool:
+        pass
+    
+    @abstractmethod
+    def verify_payment(self, transaction_id: str) -> bool:
+        pass
+
+
+class CreditCardGateway(PaymentGateway):
+    
+    def process_payment(self, amount: float, source: str, destination: str) -> bool:
+        # Implementation for credit card processing
+        # This would include API calls to a real payment processor
+        return True
+    
+    def verify_payment(self, transaction_id: str) -> bool:
+        # Implementation for payment verification
+        return True
+
+
+class BankTransferGateway(PaymentGateway):
+    
+    def process_payment(self, amount: float, source: str, destination: str) -> bool:
+        return True
+    
+    def verify_payment(self, transaction_id: str) -> bool:
+        return True
+
+
+class SecurityManager:
+    
+    def authenticate_user(self, user_id: str, credentials: Dict) -> bool:
+        # Implementation for user authentication
+        return True
+    
+    def authorize_transaction(self, user_id: str, transaction: Transaction) -> bool:
+        # Implementation for transaction authorization
+        return True
+    
+    def detect_fraud(self, transaction: Transaction) -> bool:
+        # Implementation for fraud detection
+        return False
+
+
+class NotificationService:
+    
+    def send_transaction_notification(self, user_id: str, transaction: Transaction) -> bool:
+        # Implementation for sending notifications
+        return True
+
+
+# Custom Exceptions
+class InsufficientFundsError(Exception):
+    """Exception raised when a wallet has insufficient funds for a transaction"""
+    pass
+
+
+class CurrencyMismatchError(Exception):
+    """Exception raised when trying to transfer between wallets with different currencies"""
+    pass
+
+
+class WalletManager:
+    
+    def __init__(self):
+        self.wallets: Dict[str, Wallet] = {}
+    
+    def create_wallet(self, user_id: str, currency: str) -> Wallet:
+        wallet_id = str(uuid.uuid4())
+        wallet = Wallet(wallet_id, user_id, currency)
+        self.wallets[wallet_id] = wallet
+        return wallet
+    
+    def get_wallet(self, wallet_id: str) -> Optional[Wallet]:
+        return self.wallets.get(wallet_id)
+    
+    def get_user_wallets(self, user_id: str) -> List[Wallet]:
+        return [wallet for wallet in self.wallets.values() if wallet.user_id == user_id]
+
+
+class UserManager:
+    
+    def __init__(self):
+        self.users: Dict[str, User] = {}
+    
+    def create_user(self, name: str, email: str, phone: str) -> User:
+        user_id = str(uuid.uuid4())
+        user = User(user_id, name, email, phone)
+        self.users[user_id] = user
+        return user
+    
+    def get_user(self, user_id: str) -> Optional[User]:
+        return self.users.get(user_id)
+    
+    def get_user_by_email(self, email: str) -> Optional[User]:
+        for user in self.users.values():
+            if user.email == email:
+                return user
+        return None
+
+
+if __name__ == "__main__":
+    user_manager = UserManager()
+    wallet_manager = WalletManager()
+    
+    alice = user_manager.create_user("Alice Smith", "alice@example.com", "+1234567890")
+    bob = user_manager.create_user("Bob Johnson", "bob@example.com", "+0987654321")
+    
+    alice_wallet = wallet_manager.create_wallet(alice.user_id, "USD")
+    bob_wallet = wallet_manager.create_wallet(bob.user_id, "USD")
+    
+    alice_wallet.deposit(1000.0)
+    
+    try:
+        alice_wallet.transfer(bob_wallet, 500.0)
+        print(f"Alice's balance: {alice_wallet.balance}")
+        print(f"Bob's balance: {bob_wallet.balance}")
+    except Exception as e:
+        print(f"Transfer failed: {str(e)}")
+    
+    transactions = alice_wallet.get_transaction_history()
+    for transaction in transactions:
+        print(f"Transaction: {transaction.transaction_type.value}, Amount: {transaction.amount}, Status: {transaction.status.value}")
