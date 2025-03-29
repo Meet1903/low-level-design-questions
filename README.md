@@ -19,6 +19,7 @@ The repository is structured as follows:
 ├── LRUCache.py             # LRU Cache system implementation
 ├── CarRentalSystem.py      # Car rental management system
 ├── VendingMachine.py       # Vending machine simulation
+├── LinkedIn.py             # LinkedIn service simulation
 ├── README.md               # Project documentation
 └── other_lld_questions/    # Additional LLD solutions
 ```
@@ -56,6 +57,10 @@ The repository is structured as follows:
 7. **Vending Machine (LLD)**
    - Simulates a vending machine with item selection and payment processing.
    - Manages inventory and handles transactions.
+
+8. **LinkedIn (LLD)**
+   - Models a professional networking service similar to LinkedIn.
+   - Supports profile creation, connections, messaging, and job postings.
 
 ## Getting Started
 To run any solution, simply execute the Python file from the command line:
