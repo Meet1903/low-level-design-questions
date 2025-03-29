@@ -16,6 +16,9 @@ The repository is structured as follows:
 ├── Twitter.py              # Twitter service implementation
 ├── IceCreamShop.py         # Ice cream shop management system
 ├── AmazonLockerService.py  # Amazon Locker service simulation
+├── LRUCache.py             # LRU Cache system implementation
+├── CarRentalSystem.py      # Car rental management system
+├── VendingMachine.py       # Vending machine simulation
 ├── README.md               # Project documentation
 └── other_lld_questions/    # Additional LLD solutions
 ```
@@ -41,6 +44,18 @@ The repository is structured as follows:
    - Models a locker-based delivery system.
    - Supports package deposit, retrieval, and locker management.
    - Uses a reservation system to ensure smooth package handling.
+
+5. **LRU Cache (LLD)**
+   - An in-memory Least Recently Used (LRU) cache implementation.
+   - Supports efficient insertion and lookup using linked list and hash map.
+
+6. **Car Rental System (LLD)**
+   - Manages car rentals, bookings, and availability.
+   - Supports reservation and return of cars.
+
+7. **Vending Machine (LLD)**
+   - Simulates a vending machine with item selection and payment processing.
+   - Manages inventory and handles transactions.
 
 ## Getting Started
 To run any solution, simply execute the Python file from the command line:
