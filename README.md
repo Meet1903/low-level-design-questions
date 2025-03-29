@@ -7,11 +7,15 @@ Welcome to the **Low-Level Design (LLD) Questions** repository! This repository 
 - Clean and modular Python implementations.
 - In-memory simulation for complex systems.
 - Incorporation of real-world design patterns and best practices.
+- Efficient handling of edge cases and performance considerations.
 
 ## Project Structure
 The repository is structured as follows:
 ```
-├── UnixFileSystem.py   # Unix-like file system implementation
+├── UnixFileSystem_LLD.py   # Unix-like file system implementation
+├── Twitter.py              # Twitter service implementation
+├── IceCreamShop.py         # Ice cream shop management system
+├── AmazonLockerService.py  # Amazon Locker service simulation
 ├── README.md               # Project documentation
 └── other_lld_questions/    # Additional LLD solutions
 ```
@@ -24,10 +28,24 @@ The repository is structured as follows:
      - Metadata management (creation time, modification time, size, permissions)
    - Built using object-oriented programming principles.
 
+2. **Twitter (LLD)**
+   - A simplified Twitter service implementation.
+   - Supports tweet posting, following, and timeline generation.
+   - Demonstrates scalable and modular design.
+
+3. **Ice Cream Shop (LLD)**
+   - A system to manage ice cream inventory, orders, and sales.
+   - Includes flavor customization and order tracking.
+
+4. **Amazon Locker Service (LLD)**
+   - Models a locker-based delivery system.
+   - Supports package deposit, retrieval, and locker management.
+   - Uses a reservation system to ensure smooth package handling.
+
 ## Getting Started
 To run any solution, simply execute the Python file from the command line:
 ```bash
-python UnixFileSystem.py
+python UnixFileSystem_LLD.py
 ```
 
 ## How to Contribute
