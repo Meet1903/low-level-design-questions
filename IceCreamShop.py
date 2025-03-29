@@ -449,7 +449,7 @@ class IceCreamShopFacade:
         return self.inventory_service.update_container_stock(container_id, quantity)
     
 
-if __name__=='main'():
+if __name__=='__main__':
     # Initialize the system
     shop = IceCreamShopFacade()
     
