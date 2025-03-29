@@ -22,7 +22,7 @@ class DeliveryStatus(Enum):
     EXPIRED = 'EXPIRED'
 
 class GeoLocation:
-    def _init__(self, latitude, longitude):
+    def __init__(self, latitude, longitude):
         self.latitude = latitude
         self.longitude = longitude
     
@@ -78,8 +78,8 @@ class Package():
         self.user_lcoation = user_location
         self.delivery_code = self._generate_delivery_code()
         self.status = DeliveryStatus.PENDING
-        self.delivery_time = time.time()
-        self.expiry_time = time.time() + timedelta(days = 3)
+        self.delivery_time = datetime.now()
+        self.expiry_time = datetime.now() + timedelta(days = 3)
     
     def _generate_delivery_code(self):
         return str(uuid.uuid4())[:6].upper()
@@ -150,7 +150,7 @@ class LockerService:
         return package
 
 
-if __name__=='main':
+if __name__=='__main__':
     locker_service = LockerService()
 
     station = locker_service.create_locaker_station("STATION_1", "Brooklyn", GeoLocation(0.7128, -74.0060))
