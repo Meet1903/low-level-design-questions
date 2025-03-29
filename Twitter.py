@@ -166,7 +166,7 @@ class TwitterService:
             reverse=True
         )[:limit]
 
-if __name__ == 'main':
+if __name__ == '__main__':
     twitter = TwitterService()
     
     user1 = twitter.register_user("alice", "alice@example.com", "password123")
