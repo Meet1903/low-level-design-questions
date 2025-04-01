@@ -81,6 +81,7 @@ class VendingMachine:
     def insert_money(self, amount):
         if self.current_state != VendingMachineStatus.PAYMENT_PENDING:
             raise ValueError("Invalid state for inserting money")
+        self.current_balance = amount
     
     def dispense_product(self):
         if self.current_state != VendingMachineStatus.PAYMENT_PENDING:
