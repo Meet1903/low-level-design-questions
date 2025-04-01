@@ -62,7 +62,7 @@ class VendingMachine:
         if not product.is_available():
             raise ValueError('Product out of stock')
         
-        self.select_product = product
+        self.selected_priduct = product
         self.current_state = VendingMachineStatus.ITEM_SELECTED
     
     def select_payment_method(self, method: PaymentMethod):
